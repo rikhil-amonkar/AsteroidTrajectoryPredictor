@@ -7,36 +7,44 @@ import matplotlib.pyplot as plt
 
 # Import all impact and pha data for space objects
 impact_data = pd.read_csv("/Users/rikhilamacpro/VS Projects/Astroid Trajectory Predictor ML Project #7/AstroidTrajectoryPredictor/impact_data/cneos_fireball_data.csv")
-potential_haz_data = pd.read_json("/Users/rikhilamacpro/VS Projects/Astroid Trajectory Predictor ML Project #7/AstroidTrajectoryPredictor/impact_data/pha_extended.json")
-
-print(impact_data.head())
-print(potential_haz_data.head())
+pred_astroids_data = pd.read_csv("/Users/rikhilamacpro/VS Projects/Astroid Trajectory Predictor ML Project #7/AstroidTrajectoryPredictor/impact_data/cneos_sentry_summary_data.csv")
+# potential_haz_data = pd.read_json("/Users/rikhilamacpro/VS Projects/Astroid Trajectory Predictor ML Project #7/AstroidTrajectoryPredictor/impact_data/pha_extended.json")
 
 # Change sign of coordinate depending on direction
 def convert_to_decimal(coord):
     direction = coord[-1]
     value_coord = float(coord[:-1])
-
     if direction in ["S", "W"]:
         value_coord = -value_coord  
-
     return value_coord
 
-# Example usage:
-latitude = []
-longitude = []
+# Change joules of energy to kilojoules
+def energy_to_kj(energy):
+    kj_energy = energy / 1000
+    return kj_energy
 
-# Convert to dataframe
-df = pd.DataFrame(impact_data)
+# Convert data into dataframe
+df_impact = pd.DataFrame(impact_data)
+df_predicted = pd.DataFrame(pred_astroids_data)
 
 # Remove rows with any NaN values
-df_cleaned = df.dropna()
+df_cleaned_impact = df_impact.dropna()
+df_cleaned_predicted = df_predicted.dropna()
 
-for lat in df_cleaned['Latitude (deg.)']:
-    print(lat)
-
-print(latitude, longitude)    
+print(df_cleaned_predicted)
 
 # Process long and lat data columns
-# df['Latitude (deg.)'] = df['Latitude (deg.)'].apply(convert_to_decimal)
-# df['Longitude'] = df['Longitude'].apply(convert_to_decimal)
+df_cleaned_impact['Latitude (deg.)'] = df_cleaned_impact['Latitude (deg.)'].apply(convert_to_decimal)
+df_cleaned_impact['Longitude (deg.)'] = df_cleaned_impact['Longitude (deg.)'].apply(convert_to_decimal)
+df_cleaned_predicted['Latitude (deg.)'] = df_cleaned_predicted['Latitude (deg.)'].apply(convert_to_decimal)
+df_cleaned_predicted['Longitude (deg.)'] = df_cleaned_predicted['Longitude (deg.)'].apply(convert_to_decimal)
+
+# Process radiated energy data from J into kJ for easier display
+df_cleaned_impact['Total Radiated Energy (J)'] = df_cleaned_impact['Total Radiated Energy (J)'].apply(energy_to_kj)
+df_cleaned_impact = df_cleaned_impact.rename(columns={'Total Radiated Energy (J)': 'Total Radiated Energy (kJ)'})
+df_cleaned_predicted['Total Radiated Energy (J)'] = df_cleaned_predicted['Total Radiated Energy (J)'].apply(energy_to_kj)
+df_cleaned_predicted = df_cleaned_predicted.rename(columns={'Total Radiated Energy (J)': 'Total Radiated Energy (kJ)'})
+
+print(df_cleaned_impact.head())
+print(df_cleaned_predicted.head())
+
