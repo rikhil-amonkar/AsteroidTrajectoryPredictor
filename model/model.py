@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 # Import all impact and pha data for space objects
 impact_data = pd.read_csv("/Users/rikhilamacpro/VS Projects/Astroid Trajectory Predictor ML Project #7/AstroidTrajectoryPredictor/impact_data/cneos_fireball_data.csv")
-pred_astroids_data = pd.read_csv("/Users/rikhilamacpro/VS Projects/Astroid Trajectory Predictor ML Project #7/AstroidTrajectoryPredictor/impact_data/cneos_sentry_summary_data.csv")
+pred_asteroids_data = pd.read_csv("/Users/rikhilamacpro/VS Projects/Astroid Trajectory Predictor ML Project #7/AstroidTrajectoryPredictor/impact_data/cneos_sentry_summary_data.csv")
 # potential_haz_data = pd.read_json("/Users/rikhilamacpro/VS Projects/Astroid Trajectory Predictor ML Project #7/AstroidTrajectoryPredictor/impact_data/pha_extended.json")
 
 # Change sign of coordinate depending on direction
@@ -25,7 +25,7 @@ def energy_to_kj(energy):
 
 # Convert data into dataframe
 df_impact = pd.DataFrame(impact_data)
-df_predicted = pd.DataFrame(pred_astroids_data)
+df_predicted = pd.DataFrame(pred_asteroids_data)
 
 # Remove rows with any NaN values
 df_cleaned_impact = df_impact.dropna()
