@@ -36,14 +36,10 @@ print(df_cleaned_predicted)
 # Process long and lat data columns
 df_cleaned_impact['Latitude (deg.)'] = df_cleaned_impact['Latitude (deg.)'].apply(convert_to_decimal)
 df_cleaned_impact['Longitude (deg.)'] = df_cleaned_impact['Longitude (deg.)'].apply(convert_to_decimal)
-df_cleaned_predicted['Latitude (deg.)'] = df_cleaned_predicted['Latitude (deg.)'].apply(convert_to_decimal)
-df_cleaned_predicted['Longitude (deg.)'] = df_cleaned_predicted['Longitude (deg.)'].apply(convert_to_decimal)
 
 # Process radiated energy data from J into kJ for easier display
 df_cleaned_impact['Total Radiated Energy (J)'] = df_cleaned_impact['Total Radiated Energy (J)'].apply(energy_to_kj)
 df_cleaned_impact = df_cleaned_impact.rename(columns={'Total Radiated Energy (J)': 'Total Radiated Energy (kJ)'})
-df_cleaned_predicted['Total Radiated Energy (J)'] = df_cleaned_predicted['Total Radiated Energy (J)'].apply(energy_to_kj)
-df_cleaned_predicted = df_cleaned_predicted.rename(columns={'Total Radiated Energy (J)': 'Total Radiated Energy (kJ)'})
 
 print(df_cleaned_impact.head())
 print(df_cleaned_predicted.head())
