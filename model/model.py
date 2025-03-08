@@ -1,12 +1,12 @@
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.metrics import accuracy_score, classification_report
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import matplotlib.pyplot as plt
 import math
 
-# ****** NEEDED FORMULAS ******
+# **************** NEEDED FORMULAS ****************
 
 # Energy(J) = (0.5) * (mass) * (velocity)^2
 # Diameter(km) (est.) = [ 1329 / sqrt(albedo(Pv)) ] * (10)^(-0.2 * H(mag))
@@ -20,6 +20,8 @@ import math
 # Import all impact and pha data for space objects
 impact_data = pd.read_csv("/Users/rikhilamacpro/VS Projects/Asteroid Trajectory Predictor ML Project #7/AsteroidTrajectoryPredictor/impact_data/cneos_fireball_data.csv")
 neo_close = pd.read_csv("/Users/rikhilamacpro/VS Projects/Asteroid Trajectory Predictor ML Project #7/AsteroidTrajectoryPredictor/impact_data/neo_close_approaches.csv")
+
+# **************** DATA PROCESSING ****************
 
 # Change sign of coordinate depending on direction
 def direction_to_decimal(coord):
@@ -90,19 +92,95 @@ neo_poss_imp_energy = [] # in joules (J)
 for mass, velocity in zip(neo_mass, df_cleaned_neo['V relative(km/s)']):
     neo_imp_energy_est = (mass) * (velocity)**2
     neo_poss_imp_energy.append(neo_imp_energy_est)
+
+def kilotons_to_joules(energy):
+    return energy * 4.184e12
+
+# Rename and add all column names and values to match similar features
+df_cleaned_neo['Estimated Mass (kg)'] = neo_mass # Estimated mass
+df_cleaned_neo['Estimated Volume (m^3)'] = neo_volume # Estimated volume
+df_cleaned_neo['Calculated Total Impact Energy (J)'] = neo_poss_imp_energy # Estimated impact energy
+df_cleaned_impact['Diameter (m)'] = impact_diam_est # Estimated diameter
+df_cleaned_impact['Estimated Mass (kg)'] = impact_mass_est # Estimated mass
+df_cleaned_neo = df_cleaned_neo.rename(columns={'V relative(km/s)': 'Velocity (km/s)'})
+
+# Convert all impact energy values from kilotons to joules
+df_cleaned_impact['Calculated Total Impact Energy (kt)'] = df_cleaned_impact['Calculated Total Impact Energy (kt)'].apply(kilotons_to_joules)
+df_cleaned_impact = df_cleaned_impact.rename(columns={'Calculated Total Impact Energy (kt)': 'Calculated Total Impact Energy (J)'})
+
+# Add labels to NEO data (label = 0 for NEOs since we don't know impact)
+df_cleaned_neo['Impact_Label'] = 0
+
+# Add labels to impact data (label = 1 for impacted asteroids since we know impact)
+df_cleaned_neo['Impact_Label'] = 1
+
+# Combine both dataframes into one
+df_combined_data = pd.concat([df_cleaned_neo, df_cleaned_impact], ignore_index=True)
+df_combined_data = df_combined_data.fillna(0)  # or df_combined_data.fillna(df_combined_data.mean())
+
+# **************** MACHINE LEARNING MODEL ****************
+
+# Select features to be used for training
+common_features = ["Velocity (km/s)", "Diameter (m)", "Estimated Mass (kg)", "Calculated Total Impact Energy (J)"]
+
+# Select features and labels
+X = df_combined_data[common_features]
+y = df_combined_data['Impact_Label']
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Scale data
+scaler = StandardScaler()
+X_scaler = scaler.fit(X_train)
+X_train_scaled = X_scaler.transform(X_train)
+X_test_scaled = X_scaler.transform(X_test)
+
+# Create a linear regression model
+model = LogisticRegression(class_weight="balanced")
+
+# Train the model
+model.fit(X_train_scaled, y_train)
+
+# Make predictions using the testing data
+predictions = model.predict(X_test_scaled)
+
+# Convert continuous predictions to binary labels using threshold
+predictions_binary = (predictions > 0.5).astype(int)
+
+# Calculate accuracy score
+accuracy = accuracy_score(y_test, predictions_binary)
+print(f"\nThis model is {(accuracy * 100):.2f}% accurate.")
+
+# **************** USER PROBABILITY PREDICITONS ****************
+
+if __name__ == "__main__":  # User input for asteroid features
+    print("\nPlease enter the following features for the asteroid: ")
     
-# print(neo_volume)
-# print("\n\n")
-# print(neo_mass)
-print("\n\n")
-print(df_cleaned_neo.columns)
-print("\n\n")
-print(df_cleaned_impact.columns)
-# print("\n\n")
-# print(df_cleaned_neo.head())
+    # User inputs only velocity, mass, and diameter
+    velocity = float(input("Velocity (km/s): "))
+    mass = float(input("Estimated Mass (kg): "))
+    diameter = float(input("Diameter (m): "))
+    
+    # Calculate the total impact energy (in Joules)
+    impact_energy = 0.5 * mass * (velocity * 1000) ** 2  # converting velocity to m/s
+    
+    # Print calculated impact energy
+    print(f"Estimated Total Impact Energy (J): {impact_energy:.2e}")
+    
+    # Scale user input
+    user_input = [[velocity, diameter, mass, impact_energy]]
+    user_input_scaled = X_scaler.transform(user_input)
+
+    # Make prediction (get probability for both classes)
+    user_prediction_proba = model.predict_proba(user_input_scaled)
+
+    # Extract the probability of the asteroid hitting Earth (class 1)
+    hit_probability = user_prediction_proba[0][1]
+
+    print(f"\nThe probability that this asteroid will hit Earth is: {hit_probability * 100:.2f}%")
 
 
-# Process 
 
 
 
