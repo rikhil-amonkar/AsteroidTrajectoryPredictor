@@ -197,18 +197,29 @@ ax.set_ylim(-crater_radius * 1.2, crater_radius * 1.2)
 ax.set_aspect('equal', 'box')
 
 # Initial crater (small circle)
-crater = plt.Circle((0, 0), 0.1, color='brown', fill=True)
+crater = plt.Circle((0, 0), 0.1, color='blue', linewidth=5, fill=False)
 ax.add_patch(crater)
+
+# Set background color
 ax.set_facecolor('black')
+
+fball_field_approx_rad = 0.11  # Radius of football field (approx.)
+
+# Reference object for size comparison
+football_field_ref = plt.Circle((0, 0), fball_field_approx_rad, color='green', fill=True, label="Average Football Field")
+ax.add_patch(football_field_ref)
 
 # Function to update crater size in animation
 def update(frame):
     radius = (frame / 50) * crater_radius  # Expand over time
     crater.set_radius(radius)
-    crater.set_alpha(1 - (frame / 50))  # Fades out over time
+    crater.set_alpha(1 - (frame / 70))  # Fades out over time
 
 # Animate
 ani = animation.FuncAnimation(fig, update, frames=50, interval=50)
+
+# Create a legend to display the size comparison
+plt.legend(loc="upper left")
 
 # Display
 plt.title(f"Crater Formation (Estimated Impact Radius: {crater_radius:.2f} km)")
