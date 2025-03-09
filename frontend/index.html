@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
+    <title>AI Asteroid Impact Predictor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
   </head>
   <body>
-    <nav class="navbar">
+    <nav class="navbar has-shadow is-spaced is-black">
         <div class="navbar-brand">
             <a class="navbar-item" alt="site-logo">
                 <img src="asteroid_logo_1.png" style="max-height: 70px" class="py-2 px-2">
@@ -21,12 +21,42 @@
                 <a class="navbar-item">Project Background</a>
             </div>
       </nav>
-  <section class="section">
-    <div class="container">
+  <section class="section hero is-white is-bold">
+    <div class="container" style="margin: 0 auto;">
       </h1>
       <p class="is-size-5 has-text-centered">
-        Know the chances of near-Earth-object making impact with <strong class="has-text-primary">AstroGaurd</strong>!
+        Keep an eye on Earth's nearest asteroids with <strong class="has-text-warning">AstroGaurd</strong>!
       </p>
     </div>
+  </section>
+  <section class="section hero is-black">
+    <form class="section hero is-white" style="padding-left: 60px; max-width: 100%;">
+      <div class="field">
+        <label class="label is-size-3">Asteroid Diameter (m)</label>
+        <div class="control" style="width: 25%">
+          <input class="input is-size-5" type="number" placeholder="Enter diameter of asteroid">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label is-size-3">Asteroid Velocity (m/s)</label>
+        <div class="control" style="width: 25%">
+          <input class="input is-size-5" type="number" placeholder="Enter velocity of asteroid">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label is-size-3">Asteroid Mass (kg)</label>
+        <div class="control" style="width: 25%">
+          <input class="input is-size-5" type="number" placeholder="Enter mass of asteroid">
+        </div>
+      </div>
+      <div class="field">
+        <div class="control" style="padding-top: 20px;">
+          <button class="button is-warning is-size-5">
+            <strong>Predict Impact</strong>
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
   </body>
 </html>
