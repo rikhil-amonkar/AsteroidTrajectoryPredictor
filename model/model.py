@@ -4,6 +4,8 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import numpy as np
 import math
 
 # **************** NEEDED FORMULAS ****************
@@ -179,6 +181,40 @@ if __name__ == "__main__":  # User input for asteroid features
     hit_probability = user_prediction_proba[0][1]
 
     print(f"\nThe probability that this asteroid will hit Earth is: {hit_probability * 100:.2f}%")
+
+# **************** GRAPH OF IMPACT ****************
+
+# Constants
+k = 1.5  # Rock impact material constant
+
+# Calculate crater radius using empirical relation
+crater_radius = (k * (diameter ** 0.78) * (velocity ** 0.44) * (mass ** 0.12)) / 1000 # in km
+
+# Create figure and axis
+fig, ax = plt.subplots()
+ax.set_xlim(-crater_radius * 1.2, crater_radius * 1.2)
+ax.set_ylim(-crater_radius * 1.2, crater_radius * 1.2)
+ax.set_aspect('equal', 'box')
+
+# Initial crater (small circle)
+crater = plt.Circle((0, 0), 0.1, color='brown', fill=True)
+ax.add_patch(crater)
+ax.set_facecolor('black')
+
+# Function to update crater size in animation
+def update(frame):
+    radius = (frame / 50) * crater_radius  # Expand over time
+    crater.set_radius(radius)
+    crater.set_alpha(1 - (frame / 50))  # Fades out over time
+
+# Animate
+ani = animation.FuncAnimation(fig, update, frames=50, interval=50)
+
+# Display
+plt.title(f"Crater Formation (Estimated Impact Radius: {crater_radius:.2f} km)")
+plt.grid(True)
+plt.show()
+
 
 
 
